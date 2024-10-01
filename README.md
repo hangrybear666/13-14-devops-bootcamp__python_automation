@@ -2,7 +2,7 @@
 coming up
 
 <b><u>The course examples are:</u></b>
-1. wip
+1. Simple Python scripts for parsing cli user inputs, manipulating xlsx files and interacting with REST APIs
 
 <b><u>The exercise projects are:</u></b>
 
@@ -21,10 +21,30 @@ For debian 12 it is already preinstalled.
 ## Usage (course examples)
 
 <details closed>
-<summary><b>1. wip</b></summary>
+<summary><b>1. Simple Python scripts for parsing cli user inputs, manipulating xlsx files and interacting with REST APIs</b></summary>
 
-#### a. asd
-asd
+#### a. Enter venv and install dependencies
+```bash
+python3 -m venv $HOME/.venv
+source $HOME/.venv/bin/activate
+cd 01-python-basics/
+pip install -r requirements.txt
+```
+
+#### b. Execute basic demo modules
+```bash
+python src/countdown.py
+python src/csv-manipulation.py
+python src/http-requests.py
+```
+
+#### c. Freeeze dependencies in requirements file in case you made any changes and exit venv
+
+```bash
+cd 01-python-basics/
+pip freeze > requirements.txt
+deactivate
+```
 
 </details>
 
