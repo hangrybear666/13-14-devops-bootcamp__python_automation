@@ -7,14 +7,13 @@ ec2_client = boto3.client('ec2', region_name="eu-central-1")
 ec2_resource = boto3.resource('ec2', region_name="eu-central-1")
 
 instance_ids_frankfurt = []
-instance_ids_paris = []
 
 reservations_frankfurt = ec2_client.describe_instances()['Reservations']
 for res in reservations_frankfurt:
     instances = res['Instances']
     for ins in instances:
         if ins['KeyName'] == "tf-server-key":
-          pprint.pprint(ins)
+          # pprint.pprint(ins)
           instance_ids_frankfurt.append(ins['InstanceId'])
 
 def printTags():

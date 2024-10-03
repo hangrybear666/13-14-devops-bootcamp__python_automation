@@ -156,7 +156,12 @@ deactivate
 <details closed>
 <summary><b>4. Create Volume Snapshots for EC2 instances, then restore from backup and cleanup old backups /w aws boto3 sdk for python</b></summary>
 
-#### a. 
+#### a. Create EC2 instance/s by following step 2. Create VPC & several EC2 instances with terraform
+
+To test scripts on a single instance first, you can overwrite defaults before applying the terraform config
+```bash
+export TF_VAR_instance_count=1
+```
 
 #### b. Enter venv and install dependencies
 ```bash
