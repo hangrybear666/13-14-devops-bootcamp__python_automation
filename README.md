@@ -172,14 +172,32 @@ cd 04-ec2-volume-snapshot-restoration/
 pip install -r requirements.txt
 ```
 
-#### c. Execute ec2 volume creation, restoration and cleanup (deletion) scripts
+#### c. Create ec2 volume snapshots for 1-n instances
+
+<u>The steps are:</u>
+
+- Stop instances with user input provided name tag
+- Detach Volumes & Check for successful detachment
+- Create Snapshots & Check for Snapshot initialization
+- Attach Volumes & Check for successful attachment
+- Start instances & Check for launch status
 ```bash
 python src/ec2-create-volume-snapshot.py
+```
+
+
+#### d. Cleanup (Delete) volume snapshots not needed anymore
+```bash
 python src/ec2-delete-volume-snapshot.py
+```
+
+
+#### e. Restore EC2 instance from snapshot
+```bash
 python src/ec2-restore-volume-snapshot.py
 ```
 
-#### d. Freeeze dependencies in requirements file in case you made any changes and exit venv
+#### f. Freeeze dependencies in requirements file in case you made any changes and exit venv
 
 ```bash
 cd 04-ec2-volume-snapshot-restoration/

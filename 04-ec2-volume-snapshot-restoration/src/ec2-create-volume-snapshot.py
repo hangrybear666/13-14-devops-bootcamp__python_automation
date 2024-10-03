@@ -3,10 +3,12 @@ import schedule
 import datetime
 import pprint
 import time
+import random
 import sys
 
 ec2_client = boto3.client('ec2', region_name="eu-central-1")
 
+server_tag = input("Enter the ec2 servers 'Name' Tag Value to backup \n(default on empty string = dev-server): ")
 instance_ids = []
 volume_ids = []
 instance_volume_map = {}
@@ -19,11 +21,12 @@ all_instances_restarted = False
 #  /__` |__   |  |  | |__)
 #  .__/ |___  |  \__/ |
 def query_instances():
+  selected_tag = 'dev-server' if not server_tag or server_tag == "" else server_tag
   return ec2_client.describe_instances(
     Filters=[
       {
         'Name': 'tag:Name',
-        'Values': ['dev-server'] # set by terraform apply in project 2)
+        'Values': [f"{selected_tag}"] # set by terraform apply in project 2)
       },
     ],
   )['Reservations']
@@ -108,6 +111,7 @@ while not all_volumes_detached:
 #   __   __   ___      ___  ___     __             __   __        __  ___
 #  /  ` |__) |__   /\   |  |__     /__` |\ |  /\  |__) /__` |__| /  \  |
 #  \__, |  \ |___ /~~\  |  |___    .__/ | \| /~~\ |    .__/ |  | \__/  |
+randomNr = random.randrange(1,1000000000000000,1)
 for volume_id in instance_volume_map.values():
   new_snapshot = ec2_client.create_snapshot(
       Description=f"Snapshot at {datetime.datetime.now().strftime('%m/%d/%Y, %H:%M:%S')} for {volume_id}",
@@ -123,25 +127,36 @@ for volume_id in instance_volume_map.values():
                       'Key': 'volume_id',
                       'Value': f"{volume_id}"
                   },
+                  {
+                      'Key': 'backup_identifier',
+                      'Value': f"{randomNr}"
+                  },
               ]
           },
       ],
   )
   # pprint.pprint(new_snapshot) # debug
 
-for n in range(1, 4):
+for n in range(1, 5):
   time.sleep(5)
   print(f"waiting for snapshot creation...")
 
 response = ec2_client.describe_snapshots(
   Filters=[
     {
-      'Name': 'tag:created_by',
-      'Values': ['boto3-sdk']
+      'Name': 'tag:backup_identifier',
+      'Values': [f"{randomNr}"]
     },
   ],
-)
-pprint.pprint(response) # debug
+).get('Snapshots')
+
+if len(response) == len(volume_ids):
+  print(f"----------All snapshots have been started.-------------")
+else:
+  print(f"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+  print(f"xxxxxxx Snapshot creation has encountered an issue.xxxx")
+  print(f"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+  pprint.pprint(response) # debug
 
 #   __   ___      ___ ___       __                __                   ___  __
 #  |__) |__   /\   |   |   /\  /  ` |__|    \  / /  \ |    |  |  |\/| |__  /__`
