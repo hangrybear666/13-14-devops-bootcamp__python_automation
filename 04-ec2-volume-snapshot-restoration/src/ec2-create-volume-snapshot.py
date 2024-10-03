@@ -8,6 +8,9 @@ import sys
 
 ec2_client = boto3.client('ec2', region_name="eu-central-1")
 
+#   __        __   __                          __   __
+#  / _` |    /  \ |__)  /\  |       \  /  /\  |__) /__`
+#  \__> |___ \__/ |__) /~~\ |___     \/  /~~\ |  \ .__/
 server_tag = input("Enter the ec2 servers 'Name' Tag Value to backup \n(default on empty string = dev-server): ")
 instance_ids = []
 volume_ids = []
