@@ -3,9 +3,12 @@ coming up
 
 <b><u>The course examples are:</u></b>
 1. Simple Python scripts for parsing cli user inputs, manipulating xlsx files and interacting with REST APIs
-2. Create VPC & several EC2 instances with terraform, monitor state and add tags with aws boto3 sdk for python
+2. Create VPC & several EC2 instances with terraform, monitor state and add tags /w aws boto3 sdk for python
+3. Provision AWS EKS cluster /w Terraform and execute basic cluster monitoring /w aws boto3 sdk for python
+4. Create Volume Snapshots for EC2 instances, then restore from backup and cleanup old backups /w aws boto3 sdk for python
+5. Provision a Linode VPS & run dockerized website & monitor for downtime. Then restart VPS and notify via email /w linode_api4 for python
 
-<b><u>The exercise projects are:</u></b>
+<!-- <b><u>The exercise projects are:</u></b> -->
 
 ## Setup
 
@@ -19,6 +22,13 @@ git clone https://github.com/hangrybear666/13-14-devops-bootcamp__python_automat
 
 For debian 12 it is already preinstalled.
 
+### 3. Install terraform on your development machine
+
+For debian 12 you can use the following installation script, otherwise follow https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
+```bash
+cd scripts/ && ./install-terraform.sh
+```
+
 ## Usage (course examples)
 
 <details closed>
@@ -26,6 +36,7 @@ For debian 12 it is already preinstalled.
 
 #### a. Enter venv and install dependencies
 ```bash
+# has to be created only once
 python3 -m venv $HOME/.venv
 source $HOME/.venv/bin/activate
 cd 01-python-basics/
@@ -53,7 +64,7 @@ deactivate
 
 
 <details closed>
-<summary><b>2. Create VPC & several EC2 instances with terraform, monitor state and add tags with aws boto3 sdk for python</b></summary>
+<summary><b>2. Create VPC & several EC2 instances with terraform, monitor state and add tags /w aws boto3 sdk for python</b></summary>
 
 #### a. Create .env file with AWS credentials, Git credentials for remote server setup and any manual terraform overwrites
 ```bash
@@ -83,6 +94,7 @@ terraform apply
 
 #### d. Enter venv and install dependencies
 ```bash
+# has to be created only once
 python3 -m venv $HOME/.venv
 source $HOME/.venv/bin/activate
 cd 02-ec2-provisioning_monitoring/
@@ -108,7 +120,7 @@ deactivate
 -----
 
 <details closed>
-<summary><b>3. Provision AWS EKS cluster and execute basic cluster monitoring with aws boto3 sdk for python</b></summary>
+<summary><b>3. Provision AWS EKS cluster /w Terraform and execute basic cluster monitoring /w aws boto3 sdk for python</b></summary>
 
 #### a. Create EKS cluster with terraform by following project 3 in the terraform repo
 
@@ -118,6 +130,7 @@ https://github.com/hangrybear666/12-devops-bootcamp__terraform.git
 
 #### b. Enter venv and install dependencies
 ```bash
+# has to be created only once
 python3 -m venv $HOME/.venv
 source $HOME/.venv/bin/activate
 cd 02-ec2-provisioning_monitoring/
@@ -136,6 +149,71 @@ cd 02-ec2-provisioning_monitoring/
 pip freeze > requirements.txt
 deactivate
 ```
+</details>
+
+-----
+
+<details closed>
+<summary><b>4. Create Volume Snapshots for EC2 instances, then restore from backup and cleanup old backups /w aws boto3 sdk for python</b></summary>
+
+#### a. 
+
+
+#### b. Enter venv and install dependencies
+```bash
+# has to be created only once
+python3 -m venv $HOME/.venv
+source $HOME/.venv/bin/activate
+cd 04-ec2-volume-snapshot-restoration/
+pip install -r requirements.txt
+```
+
+#### c. Execute ec2 volume creation, restoration and cleanup (deletion) scripts
+```bash
+python src/ec2-create-volume-snapshot.py
+python src/ec2-delete-volume-snapshot.py
+python src/ec2-restore-volume-snapshot.py
+```
+
+#### d. Freeeze dependencies in requirements file in case you made any changes and exit venv
+
+```bash
+cd 04-ec2-volume-snapshot-restoration/
+pip freeze > requirements.txt
+deactivate
+```
+</details>
+
+-----
+
+<details closed>
+<summary><b>5. Provision a Linode VPS & run dockerized website & monitor for downtime. Then restart VPS and notify via email /w linode_api4 for python</b></summary>
+
+#### a.
+
+
+#### b. Enter venv and install dependencies
+```bash
+# has to be created only once
+python3 -m venv $HOME/.venv
+source $HOME/.venv/bin/activate
+cd 05-monitor-and-restart-vps/
+pip install -r requirements.txt
+```
+
+#### c. Execute monitoring script that restarts the VPS server once website downtime has been detected
+```bash
+python src/monitor-and-restart-vps.py
+```
+
+#### d. Freeeze dependencies in requirements file in case you made any changes and exit venv
+
+```bash
+cd 05-monitor-and-restart-vps/
+pip freeze > requirements.txt
+deactivate
+```
+
 </details>
 
 -----
