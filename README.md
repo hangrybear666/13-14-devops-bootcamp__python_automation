@@ -1,5 +1,5 @@
 # 13-14-devops-bootcamp__python_automation
-coming up
+Boto3 SDK Python scripts for automating AWS tasks like monitoring EC2 instances & EKS clusters. Creating backups, restoring from backups, notifications and restarting servers.
 
 <b><u>The course examples are:</u></b>
 1. Simple Python scripts for parsing cli user inputs, manipulating xlsx files and interacting with REST APIs
@@ -158,7 +158,6 @@ deactivate
 
 #### a. 
 
-
 #### b. Enter venv and install dependencies
 ```bash
 # has to be created only once
@@ -190,7 +189,6 @@ deactivate
 <summary><b>5. Provision a Linode VPS & run dockerized website & monitor for downtime. Then restart VPS and notify via email /w linode_api4 for python</b></summary>
 
 #### a.
-
 
 #### b. Enter venv and install dependencies
 ```bash
