@@ -187,6 +187,12 @@ python src/ec2-create-volume-snapshot.py
 
 
 #### d. Cleanup (Delete) volume snapshots not needed anymore
+
+<u>The steps are:</u>
+
+- Read user input to limit deletion to ec2 Name tag
+- Delete snapshots belonging to unattached volumes
+- Delete all but the newest snapshot for each volume
 ```bash
 python src/ec2-delete-volume-snapshot.py
 ```
