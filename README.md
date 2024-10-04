@@ -199,6 +199,17 @@ python src/ec2-delete-volume-snapshot.py
 
 
 #### e. Restore EC2 instance from snapshot
+<u>The steps are:</u>
+
+- Read user input to limit restore to ec2 instance id
+- Read user input to decide whether to delete current volume after restore
+- Stop instances with user input provided instance id
+- Detach Volume & Check for successful detachment
+- Fetch Latest Snapshot of Volume
+- Create Volume from Latest Snapshot
+- Attach Volume & Check for successful attachment
+- Start instance & Check for launch status
+- Delete prior volume if user input has confirmed
 ```bash
 python src/ec2-restore-volume-snapshot.py
 ```

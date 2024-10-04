@@ -15,7 +15,7 @@ instance_stopped = False
 instance_restarted = False
 new_volume_available = False
 volume_detached = False
-volume_reattached = False
+volume_attached = False
 region = "eu-central-1"
 
 ec2_client = boto3.client('ec2', region_name=region)
@@ -186,7 +186,7 @@ while not new_volume_available:
 else:
   schedule.clear()
 
-def check_reattaachment_status():
+def check_reattachment_status():
   volume_count = 1
   reattached_volume_count = 0
   volumes = ec2_client.describe_volumes(
@@ -197,13 +197,13 @@ def check_reattaachment_status():
       reattached_volume_count += 1
     # pprint.pprint(volume) # debug
   if reattached_volume_count == volume_count:
-    global volume_reattached
-    volume_reattached = True
-    print(f"----------All volumes successfully reattached.---------")
+    global volume_attached
+    volume_attached = True
+    print(f"----------All volumes successfully attached.-----------")
 
-schedule.every(5).seconds.do(check_reattaachment_status)
+schedule.every(5).seconds.do(check_reattachment_status)
 
-while not volume_reattached:
+while not volume_attached:
   schedule.run_pending()
   time.sleep(1)
 else:
@@ -229,9 +229,9 @@ else:
 #  |  \ |__  |    |__   |  |__     /  \ |    |  \    \  / /  \ |    |  |  |\/| |__
 #  |__/ |___ |___ |___  |  |___    \__/ |___ |__/     \/  \__/ |___ \__/  |  | |___
 if delete_old_volume == 'yes':
-  print(f"----------Deleting volume {volume_id}---------")
+  print(f"----------Deleting volume {volume_id}--------")
   response = ec2_client.delete_volume(
     VolumeId=volume_id,
   )
-  print(f"----------delete status code: {response.get('ResponseMetadata').get('HTTPStatusCode')}-----------------------")
+  print(f"----------delete status code: {response.get('ResponseMetadata').get('HTTPStatusCode')}----------------------")
   #pprint.pprint(response) # debug

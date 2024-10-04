@@ -192,7 +192,7 @@ for instance_id in instance_ids:
   )
   # pprint.pprint(response) # debug
 
-def check_reattaachment_status():
+def check_reattachment_status():
     volume_count = len(volume_ids)
     reattached_volume_count = 0
     volumes = ec2_client.describe_volumes(
@@ -207,7 +207,7 @@ def check_reattaachment_status():
       all_volumes_reattached = True
       print(f"----------All volumes successfully reattached.---------")
 
-schedule.every(5).seconds.do(check_reattaachment_status)
+schedule.every(5).seconds.do(check_reattachment_status)
 
 while not all_volumes_reattached:
   schedule.run_pending()
