@@ -4,7 +4,6 @@ import datetime
 import pprint
 import time
 import random
-import sys
 
 ec2_client = boto3.client('ec2', region_name="eu-central-1")
 
@@ -56,31 +55,45 @@ response = ec2_client.stop_instances(
   Force=False # not recommended, can lead to data loss
 )
 
-def check_instance_status(isStart):
+def check_instance_status(isStop):
   instance_count = len(instance_ids)
   stopped_instance_count = 0
+  running_instance_count = 0
   statuses = ec2_client.describe_instance_status(
     InstanceIds=instance_ids,
     IncludeAllInstances=True
   )
   for status in statuses['InstanceStatuses']:
     state = status['InstanceState']['Name']
-    if (state == 'stopped'):
+    if state == 'stopped':
       stopped_instance_count += 1
-    print(f"Instance '{status['InstanceId']}' is [{state}] with instance status [{status['InstanceStatus']['Status']}] and system status [{status['SystemStatus']['Status']}]")
-  if isStart and stopped_instance_count == instance_count:
+    elif state == 'running':
+      running_instance_count +=1
+    if isStop:
+      print(f"----------Instance '{status['InstanceId']}' is [{state}]")
+    else:
+      print(f"Instance '{status['InstanceId']}' is [{state}] /w instance status [{status['InstanceStatus']['Status']}] and system status [{status['SystemStatus']['Status']}]")
+  if isStop and stopped_instance_count == instance_count:
     global all_instances_stopped
     all_instances_stopped = True
     print(f"----------All instances successfully stopped.----------")
-  elif not isStart and stopped_instance_count == 0:
+  elif not isStop and running_instance_count == instance_count:
     global all_instances_restarted
     all_instances_restarted = True
+    started_instances = query_instances()
+    for res in started_instances:
+      instances = res['Instances']
+      for ins in instances:
+        print(f"Instance '{ins['InstanceId']}' has the following IPv4 address: [{ins.get('PublicIpAddress')}]")
     print(f"----------All instances successfully restarted.--------")
 
-schedule.every(5).seconds.do(check_instance_status, True)
+schedule.every(8).seconds.do(check_instance_status, True)
 
 while not all_instances_stopped:
   schedule.run_pending()
+  time.sleep(1)
+else:
+  schedule.clear()
 
 #   __   ___ ___       __                __                   ___  __
 #  |  \ |__   |   /\  /  ` |__|    \  / /  \ |    |  |  |\/| |__  /__`
@@ -109,13 +122,16 @@ def check_detachment_status():
 schedule.every(5).seconds.do(check_detachment_status)
 
 while not all_volumes_detached:
-    schedule.run_pending()
+  schedule.run_pending()
+  time.sleep(1)
+else:
+  schedule.clear()
 
 #   __   __   ___      ___  ___     __             __   __        __  ___
 #  /  ` |__) |__   /\   |  |__     /__` |\ |  /\  |__) /__` |__| /  \  |
 #  \__, |  \ |___ /~~\  |  |___    .__/ | \| /~~\ |    .__/ |  | \__/  |
 randomNr = random.randrange(1,1000000000000000,1)
-for volume_id in instance_volume_map.values():
+for instance_id, volume_id in instance_volume_map.items():
   new_snapshot = ec2_client.create_snapshot(
       Description=f"Snapshot at {datetime.datetime.now().strftime('%m/%d/%Y, %H:%M:%S')} for {volume_id}",
       VolumeId=volume_id,
@@ -131,6 +147,10 @@ for volume_id in instance_volume_map.values():
                       'Value': f"{volume_id}"
                   },
                   {
+                      'Key': 'instance_id',
+                      'Value': f"{instance_id}"
+                  },
+                  {
                       'Key': 'backup_identifier',
                       'Value': f"{randomNr}"
                   },
@@ -140,9 +160,9 @@ for volume_id in instance_volume_map.values():
   )
   # pprint.pprint(new_snapshot) # debug
 
-for n in range(1, 5):
-  time.sleep(5)
-  print(f"waiting for snapshot creation...")
+for n in range(1, 4):
+  time.sleep(3)
+  print(f"----------waiting for snapshot creation................")
 
 response = ec2_client.describe_snapshots(
   Filters=[
@@ -172,10 +192,6 @@ for instance_id in instance_ids:
   )
   # pprint.pprint(response) # debug
 
-for n in range(1, 4):
-  time.sleep(3)
-  print(f"waiting for volume attachment...")
-
 def check_reattaachment_status():
     volume_count = len(volume_ids)
     reattached_volume_count = 0
@@ -194,7 +210,10 @@ def check_reattaachment_status():
 schedule.every(5).seconds.do(check_reattaachment_status)
 
 while not all_volumes_reattached:
-    schedule.run_pending()
+  schedule.run_pending()
+  time.sleep(1)
+else:
+  schedule.clear()
 
 #   __   ___  __  ___       __  ___            __  ___            __   ___  __
 #  |__) |__  /__`  |   /\  |__)  |     | |\ | /__`  |   /\  |\ | /  ` |__  /__`
@@ -208,3 +227,6 @@ schedule.every(5).seconds.do(check_instance_status, False)
 
 while not all_instances_restarted:
   schedule.run_pending()
+  time.sleep(1)
+else:
+  schedule.clear()

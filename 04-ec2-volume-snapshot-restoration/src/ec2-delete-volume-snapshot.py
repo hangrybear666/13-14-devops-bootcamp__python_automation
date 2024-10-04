@@ -1,8 +1,6 @@
 import boto3
-import datetime
 import pprint
 import time
-import os
 from operator import itemgetter
 
 ec2_client = boto3.client('ec2', region_name="eu-central-1")
@@ -86,7 +84,8 @@ for volume_id in attached_volume_ids_set:
 
     sorted_by_date = sorted(individual_volume_snapshots, key=itemgetter('StartTime'), reverse=True)
     print(f"-------------{volume_id} has {len(individual_volume_snapshots)} snapshots.-------------")
-    print(f"-------------deleting all but the newest snapshot.--------------")
+    if len(individual_volume_snapshots) > 1:
+      print(f"-------------deleting all but the newest snapshot.--------------")
     for snap in sorted_by_date[1:]:
         response = ec2_client.delete_snapshot(
             SnapshotId=snap['SnapshotId']
