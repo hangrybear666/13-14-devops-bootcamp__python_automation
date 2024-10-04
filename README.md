@@ -6,7 +6,7 @@ Boto3 SDK Python scripts for automating AWS tasks like monitoring EC2 instances 
 2. Create VPC & several EC2 instances with terraform, monitor state and add tags /w aws boto3 sdk for python
 3. Provision AWS EKS cluster /w Terraform and execute basic cluster monitoring /w aws boto3 sdk for python
 4. Create Volume Snapshots for EC2 instances, then restore from backup and cleanup old backups /w aws boto3 sdk for python
-5. Provision a Linode VPS & run dockerized website & monitor for downtime. Then restart VPS and notify via email /w linode_api4 for python
+5. Provision a Linode VPS & run dockerized website & monitor for downtime. Then restart VPS & container /w linode_api4 for python
 
 <!-- <b><u>The exercise projects are:</u></b> -->
 
@@ -226,11 +226,35 @@ deactivate
 -----
 
 <details closed>
-<summary><b>5. Provision a Linode VPS & run dockerized website & monitor for downtime. Then restart VPS and notify via email /w linode_api4 for python</b></summary>
+<summary><b>5. Provision a Linode VPS & run dockerized website & monitor for downtime. Then restart VPS & container /w linode_api4 for python</b></summary>
 
-#### a.
+#### a. Create a Linode VPS Server by following the bonus project 1) in the terraform repo from steps a-d)
 
-#### b. Enter venv and install dependencies
+Follow the instructions for provisioning Linode VPS (while skipping the jenkins-installation script in step d)
+https://github.com/hangrybear666/12-devops-bootcamp__terraform.git
+
+
+#### b. Create .env file with your Linode Token, Public IP, VPS ID and PW
+
+In the path `05-monitor-and-restart-vps/.env`
+```bash
+LINODE_TOKEN=xxx
+LINODE_VPS_ID=1234
+REMOTE_ADDRESS=172.xxx.xxx.xxx
+SERVICE_USER_PW=changeit
+```
+
+#### c. Make sure to forward port 8081 in your linode remote firewall
+
+#### d. SSH into your remote and run nginx container on port 8081
+
+*Note:* For the python script to work, name `my-nginx` is mandatory.
+```bash
+ssh jenkins-runner@172.105.75.118 \
+docker run -d --name my-nginx -p 8081:80 nginx
+```
+
+#### e. Enter venv and install dependencies
 ```bash
 # has to be created only once
 python3 -m venv $HOME/.venv
@@ -239,12 +263,12 @@ cd 05-monitor-and-restart-vps/
 pip install -r requirements.txt
 ```
 
-#### c. Execute monitoring script that restarts the VPS server once website downtime has been detected
+#### f. Execute monitoring script that restarts the VPS server once website downtime has been detected
 ```bash
 python src/monitor-and-restart-vps.py
 ```
 
-#### d. Freeeze dependencies in requirements file in case you made any changes and exit venv
+#### g. Freeeze dependencies in requirements file in case you made any changes and exit venv
 
 ```bash
 cd 05-monitor-and-restart-vps/
