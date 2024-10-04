@@ -10,6 +10,7 @@ import time
 #  / _` |    /  \ |__)  /\  |       \  /  /\  |__) /__`
 #  \__> |___ \__/ |__) /~~\ |___     \/  /~~\ |  \ .__/
 instance_id = input("Enter the ec2 server's instance id to restore to the newest snapshot: ")
+delete_old_volume = input("Delete prior volume? (yes/no) ")
 instance_stopped = False
 instance_restarted = False
 new_volume_available = False
@@ -227,3 +228,10 @@ else:
 #   __   ___       ___ ___  ___     __        __           __                   ___
 #  |  \ |__  |    |__   |  |__     /  \ |    |  \    \  / /  \ |    |  |  |\/| |__
 #  |__/ |___ |___ |___  |  |___    \__/ |___ |__/     \/  \__/ |___ \__/  |  | |___
+if delete_old_volume == 'yes':
+  print(f"----------Deleting volume {volume_id}---------")
+  response = ec2_client.delete_volume(
+    VolumeId=volume_id,
+  )
+  print(f"----------delete status code: {response.get('ResponseMetadata').get('HTTPStatusCode')}-----------------------")
+  #pprint.pprint(response) # debug
